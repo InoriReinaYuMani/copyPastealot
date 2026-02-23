@@ -1,0 +1,139 @@
+:root {
+  font-family: 'Inter', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  color: #e9edf5;
+  background: #0f131a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #171e2a, #0c1017 60%);
+}
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 14px;
+}
+.card {
+  background: #151b26;
+  border: 1px solid #2a3344;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+input, button, textarea {
+  font: inherit;
+  color: #e9edf5;
+}
+input[type='text'], input[type='file'] {
+  background: #0e1420;
+  border: 1px solid #2f3a50;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #2f7bff;
+  color: #fff;
+  cursor: pointer;
+}
+button.ghost { background: #253149; }
+button.danger { background: #803042; }
+.status {
+  margin: 8px 2px 0;
+  color: #9db4dd;
+  font-size: 13px;
+}
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.slot {
+  border: 1px solid #2f3a50;
+  border-radius: 10px;
+  padding: 10px;
+  background: #0e1420;
+}
+.slot header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.slot h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.meta, .history {
+  font-size: 12px;
+  color: #93a7cc;
+}
+.slot-main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: start;
+}
+.text {
+  width: 100%;
+  min-height: 58px;
+  background: #131b2a;
+  border: 1px solid #2f3a50;
+  border-radius: 8px;
+  padding: 8px;
+}
+.slot-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 90px;
+}
+.slot-actions button {
+  width: 100%;
+  min-height: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.copy {
+  font-size: 18px;
+  background: #394764;
+}
+.copy.copied {
+  background: #1f9d63;
+  font-size: 16px;
+}
+.pager-wrap {
+  margin-top: 12px;
+  border-top: 1px dashed #2f3a50;
+  padding-top: 10px;
+}
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pager button {
+  min-width: 36px;
+  padding: 7px 10px;
+  background: #253149;
+}
+.pager button.active {
+  background: #2f7bff;
+}
+
+@media (max-width: 600px) {
+  .container { padding: 10px; }
+  .slot-main { grid-template-columns: 1fr 76px; }
+  .slot-actions { width: 76px; }
+  .slot-actions button { min-height: 34px; padding: 6px; font-size: 12px; }
+  .copy { font-size: 16px; }
+}
