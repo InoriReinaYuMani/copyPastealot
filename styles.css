@@ -1,0 +1,161 @@
+:root {
+  font-family: 'Inter', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  color: #e9edf5;
+  background: #0f131a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #171e2a, #0c1017 60%);
+}
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 12px;
+}
+.card {
+  background: #151b26;
+  border: 1px solid #2a3344;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+input, button, textarea, select { font: inherit; color: #e9edf5; }
+input[type='text'], input[type='file'], select {
+  background: #0e1420;
+  border: 1px solid #2f3a50;
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 7px 11px;
+  background: #2f7bff;
+  color: #fff;
+  cursor: pointer;
+}
+button.ghost { background: #253149; }
+button.danger { background: #803042; }
+.hidden { display: none; }
+.filter-panel {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.filter-panel #matchText { min-width: 220px; flex: 1; }
+
+.progress-wrap {
+  margin-top: 8px;
+}
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #9db4dd;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #202c3f;
+  border-radius: 999px;
+  overflow: hidden;
+}
+#progressFill {
+  display: block;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #2f7bff, #6aa3ff);
+  transition: width 0.15s ease;
+}
+.status { margin: 8px 2px 0; color: #9db4dd; font-size: 12px; }
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.slot {
+  display: grid;
+  grid-template-columns: 48px 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+  border: 1px solid #2f3a50;
+  border-radius: 8px;
+  padding: 6px;
+  background: #0e1420;
+}
+.slot h3 {
+  margin: 0;
+  font-size: 11px;
+  color: #a5b8db;
+}
+.text {
+  width: 100%;
+  min-height: 32px;
+  max-height: 32px;
+  resize: none;
+  padding: 6px;
+  background: #131b2a;
+  border: 1px solid #2f3a50;
+  border-radius: 6px;
+  line-height: 1.1;
+}
+.text.copied-text {
+  border-color: #2bb673;
+  background: #11251d;
+}
+.meta {
+  font-size: 11px;
+  color: #93a7cc;
+  min-width: 42px;
+  text-align: center;
+}
+.slot-actions {
+  display: flex;
+  gap: 6px;
+}
+.slot-actions button {
+  min-height: 30px;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+.copy { background: #394764; font-size: 15px; width: 36px; }
+
+.pager-wrap {
+  margin-top: 10px;
+  border-top: 1px dashed #2f3a50;
+  padding-top: 8px;
+}
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.pager button {
+  min-width: 36px;
+  padding: 6px 10px;
+  background: #253149;
+}
+.pager button.active { background: #2f7bff; }
+.bottom-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .container { padding: 8px; }
+  .slot { grid-template-columns: 38px 1fr auto; }
+  .meta { display: none; }
+  .slot-actions button.confirm { font-size: 11px; }
+}

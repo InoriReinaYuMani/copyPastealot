@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OCR Keeper</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <section class="card controls-card">
+        <div class="controls">
+          <input id="photoInput" type="file" accept="image/*" multiple />
+          <button id="processBtn">文字抽出</button>
+          <button id="toggleFilterBtn" class="ghost">検索条件</button>
+        </div>
+
+        <div id="filterPanel" class="filter-panel hidden">
+          <select id="matchMode">
+            <option value="prefix">先頭一致</option>
+            <option value="suffix">末尾一致</option>
+          </select>
+          <input id="matchText" type="text" placeholder="一致させる文字列（複数文字可）" />
+        </div>
+
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-meta">
+            <span id="progressLabel">待機中</span>
+            <span id="progressCount"></span>
+          </div>
+          <div class="progress-bar"><span id="progressFill"></span></div>
+        </div>
+
+        <p id="status" class="status">待機中</p>
+      </section>
+
+      <section class="card slots-card">
+        <div id="slots" class="slots"></div>
+
+        <div class="pager-wrap">
+          <div id="pageSelect" class="pager" aria-label="ページ選択"></div>
+        </div>
+        <div class="bottom-actions">
+          <button id="deletePageBtn" class="danger">現在ページ削除</button>
+        </div>
+      </section>
+    </main>
+
+    <template id="slotTemplate">
+      <article class="slot">
+        <h3></h3>
+        <textarea class="text"></textarea>
+        <span class="meta"></span>
+        <div class="slot-actions">
+          <button class="confirm">編集/確定</button>
+          <button class="copy" aria-label="コピー">⧉</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
