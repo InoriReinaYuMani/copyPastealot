@@ -11,38 +11,51 @@
     <main class="container">
       <section class="card controls-card">
         <div class="controls">
-          <input id="startChar" type="text" maxlength="1" placeholder="先頭文字" />
-          <input id="endChar" type="text" maxlength="1" placeholder="末尾文字" />
           <input id="photoInput" type="file" accept="image/*" multiple />
           <button id="processBtn">文字抽出</button>
-          <button id="newPageBtn" class="ghost">+ ページ追加</button>
-          <button id="deletePageBtn" class="danger">現在ページ削除</button>
+          <button id="toggleFilterBtn" class="ghost">検索条件</button>
         </div>
+
+        <div id="filterPanel" class="filter-panel hidden">
+          <select id="matchMode">
+            <option value="prefix">先頭一致</option>
+            <option value="suffix">末尾一致</option>
+          </select>
+          <input id="matchText" type="text" placeholder="一致させる文字列（複数文字可）" />
+        </div>
+
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-meta">
+            <span id="progressLabel">待機中</span>
+            <span id="progressCount"></span>
+          </div>
+          <div class="progress-bar"><span id="progressFill"></span></div>
+        </div>
+
         <p id="status" class="status">待機中</p>
       </section>
 
       <section class="card slots-card">
         <div id="slots" class="slots"></div>
+
         <div class="pager-wrap">
           <div id="pageSelect" class="pager" aria-label="ページ選択"></div>
+        </div>
+        <div class="bottom-actions">
+          <button id="deletePageBtn" class="danger">現在ページ削除</button>
         </div>
       </section>
     </main>
 
     <template id="slotTemplate">
       <article class="slot">
-        <header>
-          <h3></h3>
-          <span class="meta"></span>
-        </header>
-        <div class="slot-main">
-          <textarea class="text"></textarea>
-          <div class="slot-actions">
-            <button class="confirm">編集/確定</button>
-            <button class="copy" aria-label="コピー">⧉</button>
-          </div>
+        <h3></h3>
+        <textarea class="text"></textarea>
+        <span class="meta"></span>
+        <div class="slot-actions">
+          <button class="confirm">編集/確定</button>
+          <button class="copy" aria-label="コピー">⧉</button>
         </div>
-        <p class="history"></p>
       </article>
     </template>
 
