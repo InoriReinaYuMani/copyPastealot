@@ -10,29 +10,30 @@
   <body>
     <main class="container">
       <section class="card controls-card">
-        <div class="controls">
+        <p id="status" class="status top-status">待機中</p>
+
+        <div class="controls-row">
           <input id="photoInput" type="file" accept="image/*" multiple />
+          <span id="selectedCount" class="selected-count">未選択</span>
           <button id="processBtn">文字抽出</button>
-          <button id="toggleFilterBtn" class="ghost">検索条件</button>
         </div>
 
-        <div id="filterPanel" class="filter-panel hidden">
+        <div id="filterPanel" class="filter-panel">
+          <span class="filter-label">検索条件</span>
           <select id="matchMode">
             <option value="prefix">先頭一致</option>
             <option value="suffix">末尾一致</option>
           </select>
-          <input id="matchText" type="text" placeholder="一致させる文字列（複数文字可）" />
+          <input id="matchText" type="text" placeholder="条件文字列（複数文字可）" />
         </div>
 
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-meta">
-            <span id="progressLabel">待機中</span>
+            <span id="progressLabel"></span>
             <span id="progressCount"></span>
           </div>
           <div class="progress-bar"><span id="progressFill"></span></div>
         </div>
-
-        <p id="status" class="status">待機中</p>
       </section>
 
       <section class="card slots-card">
@@ -49,7 +50,7 @@
 
     <template id="slotTemplate">
       <article class="slot">
-        <h3></h3>
+        <span class="slot-index"></span>
         <textarea class="text"></textarea>
         <span class="meta"></span>
         <div class="slot-actions">

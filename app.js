@@ -10,13 +10,12 @@ const pageSelectEl = document.getElementById('pageSelect');
 const deletePageBtnEl = document.getElementById('deletePageBtn');
 const slotsEl = document.getElementById('slots');
 const slotTemplate = document.getElementById('slotTemplate');
-const toggleFilterBtnEl = document.getElementById('toggleFilterBtn');
-const filterPanelEl = document.getElementById('filterPanel');
 const matchModeEl = document.getElementById('matchMode');
 const matchTextEl = document.getElementById('matchText');
 const progressFillEl = document.getElementById('progressFill');
 const progressLabelEl = document.getElementById('progressLabel');
 const progressCountEl = document.getElementById('progressCount');
+const selectedCountEl = document.getElementById('selectedCount');
 
 const defaultSlot = () => ({ text: '', confirmed: false, ocrFailed: false, copyHistory: [] });
 const makePage = (id) => ({ id, slots: Array.from({ length: SLOTS_PER_PAGE }, defaultSlot) });
@@ -33,7 +32,6 @@ updateQueueStatus();
 processBtnEl.addEventListener('click', processImages);
 photoInputEl.addEventListener('change', appendSelectedFiles);
 deletePageBtnEl.addEventListener('click', deleteCurrentPage);
-toggleFilterBtnEl.addEventListener('click', () => filterPanelEl.classList.toggle('hidden'));
 
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -138,8 +136,8 @@ function renderSlots() {
     const textArea = node.querySelector('.text');
     const meta = node.querySelector('.meta');
     const copyBtn = node.querySelector('.copy');
+    node.querySelector('.slot-index').textContent = String(idx + 1);
 
-    node.querySelector('h3').textContent = `枠${idx + 1}`;
     textArea.value = slot.text;
     textArea.readOnly = slot.confirmed;
     textArea.classList.toggle('copied-text', slot.copyHistory.length > 0);
@@ -231,12 +229,16 @@ async function processImages() {
 }
 
 function findMatch(rawText, mode, term) {
-  const lines = rawText.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
-  if (!term) return lines[0] || '';
+  const candidates = rawText
+    .split(/\r?\n|[\t,、。\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 
-  const target = lines.find((line) => {
-    if (mode === 'prefix') return line.startsWith(term);
-    return line.endsWith(term);
+  if (!term) return candidates[0] || '';
+
+  const target = candidates.find((text) => {
+    if (mode === 'prefix') return text.startsWith(term);
+    return text.endsWith(term);
   });
   return target || '';
 }
@@ -259,8 +261,9 @@ function deleteCurrentPage() {
 
 function updateQueueStatus() {
   const count = state.pendingFiles.length;
-  progressLabelEl.textContent = count ? `待機中: ${count}枚` : '待機中';
-  progressCountEl.textContent = count ? `${count}/200` : '0/200';
+  selectedCountEl.textContent = count ? `${count}枚選択中` : '未選択';
+  progressLabelEl.textContent = '';
+  progressCountEl.textContent = '';
   if (!count) progressFillEl.style.width = '0%';
 }
 
