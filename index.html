@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OCR Keeper</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <section class="card controls-card">
+        <p id="status" class="status top-status">待機中</p>
+
+        <div class="controls-row">
+          <input id="photoInput" type="file" accept="image/*" multiple />
+        </div>
+
+        <div id="filterPanel" class="filter-panel">
+          <select id="matchMode">
+            <option value="prefix">先頭一致</option>
+            <option value="suffix">末尾一致</option>
+          </select>
+          <input id="matchText" type="text" placeholder="条件文字列（複数文字可）" />
+          <button id="processBtn">文字抽出</button>
+        </div>
+
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-meta">
+            <span id="progressLabel"></span>
+            <span id="progressCount"></span>
+          </div>
+          <div class="progress-bar"><span id="progressFill"></span></div>
+        </div>
+      </section>
+
+      <section class="card slots-card">
+        <div id="slots" class="slots"></div>
+
+        <div class="pager-wrap">
+          <div id="pageSelect" class="pager" aria-label="ページ選択"></div>
+        </div>
+        <div class="bottom-actions">
+          <button id="deletePageBtn" class="danger">現在ページ削除</button>
+        </div>
+      </section>
+    </main>
+
+    <template id="slotTemplate">
+      <article class="slot">
+        <span class="slot-index"></span>
+        <textarea class="text"></textarea>
+        <span class="meta"></span>
+        <div class="slot-actions">
+          <button class="confirm">編集/確定</button>
+          <button class="copy" aria-label="コピー">⧉</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
