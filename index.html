@@ -14,17 +14,15 @@
 
         <div class="controls-row">
           <input id="photoInput" type="file" accept="image/*" multiple />
-          <span id="selectedCount" class="selected-count">未選択</span>
-          <button id="processBtn">文字抽出</button>
         </div>
 
         <div id="filterPanel" class="filter-panel">
-          <span class="filter-label">検索条件</span>
           <select id="matchMode">
             <option value="prefix">先頭一致</option>
             <option value="suffix">末尾一致</option>
           </select>
           <input id="matchText" type="text" placeholder="条件文字列（複数文字可）" />
+          <button id="processBtn">文字抽出</button>
         </div>
 
         <div class="progress-wrap" id="progressWrap">
