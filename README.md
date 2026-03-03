@@ -11,3 +11,9 @@
 - OCR失敗時は「読み取れませんでした」で枠消費
 - 枠は常時編集可能、フォーカス中は枠色で選択状態を表示
 - コピー時はアイコンが一時的にチェック表示に変化
+
+
+## Pages Functions (`/api/ocr`)
+- Cloudflare Pages Functions 用に `functions/api/ocr.js` を追加済みです。
+- 現在は疎通確認用の最小スタブ実装で、`POST /api/ocr` に `image` を送ると `{ "text": "" }` を返します。
+- 実運用時はこのファイル内でOCRエンジン連携（例: NDLOCRバックエンド呼び出し）へ差し替えてください。
