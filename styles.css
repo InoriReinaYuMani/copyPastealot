@@ -11,7 +11,6 @@ input, button, textarea, select { font: inherit; color: #e9edf5; }
 input[type='text'], input[type='file'], select { background: #0e1420; border: 1px solid #2f3a50; border-radius: 8px; padding: 7px 10px; }
 button { border: 1px solid transparent; border-radius: 8px; padding: 7px 11px; background: #2f7bff; color: #fff; cursor: pointer; }
 button.danger { background: #803042; }
-.top-status { margin: 0 0 8px; color: #9db4dd; font-size: 12px; }
 .controls-row { display: flex; flex-wrap: nowrap; gap: 8px; align-items: center; }
 .filter-panel { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: nowrap; }
 .filter-panel #matchText { min-width: 260px; flex: 1; }
@@ -25,15 +24,11 @@ button.danger { background: #803042; }
 .slot { display: grid; grid-template-columns: 24px 1fr auto auto; gap: 6px; align-items: center; border: 1px solid #2f3a50; border-radius: 8px; padding: 6px; background: #0e1420; }
 .slot-index { font-size: 11px; color: #93a7cc; text-align: right; }
 .text { width: 100%; min-height: 32px; max-height: 32px; resize: none; padding: 6px; background: #131b2a; border: 1px solid #2f3a50; border-radius: 6px; line-height: 1.1; }
-.text.copied-text { border-color: #2bb673; background: #11251d; }
+.text.selected { border-color: #2bb673; background: #11251d; }
 .meta { font-size: 11px; color: #93a7cc; min-width: 42px; text-align: center; }
 .slot-actions { display: flex; gap: 6px; }
 .slot-actions button { min-height: 30px; padding: 5px 8px; white-space: nowrap; }
-
-.confirm { background: #2b3448; color: #ffffff; width: 36px; font-size: 16px; padding: 0; }
-.confirm.editing { background: #66b34a; color: #0d1a0f; }
 .copy { background: #394764; font-size: 15px; width: 36px; }
-.copy.copied { background: #4d6fb0; color: #eaf2ff; }
 
 .pager-wrap { margin-top: 10px; border-top: 1px dashed #2f3a50; padding-top: 8px; }
 .pager { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
