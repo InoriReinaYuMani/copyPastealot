@@ -24,11 +24,11 @@ button.danger { background: #803042; }
 .slot { display: grid; grid-template-columns: 24px 1fr auto auto; gap: 6px; align-items: center; border: 1px solid #2f3a50; border-radius: 8px; padding: 6px; background: #0e1420; }
 .slot-index { font-size: 11px; color: #93a7cc; text-align: right; }
 .text { width: 100%; min-height: 32px; max-height: 32px; resize: none; padding: 6px; background: #131b2a; border: 1px solid #2f3a50; border-radius: 6px; line-height: 1.1; }
-.text.selected { border-color: #2bb673; background: #11251d; }
+.text.selected { border-color: #4d89ff; background: #131f3b; }
 .meta { font-size: 11px; color: #93a7cc; min-width: 42px; text-align: center; }
 .slot-actions { display: flex; gap: 6px; }
 .slot-actions button { min-height: 30px; padding: 5px 8px; white-space: nowrap; }
-.copy { background: #394764; font-size: 15px; width: 36px; }
+.copy { background: #394764; font-size: 14px; min-width: 36px; }
 
 .pager-wrap { margin-top: 10px; border-top: 1px dashed #2f3a50; padding-top: 8px; }
 .pager { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }

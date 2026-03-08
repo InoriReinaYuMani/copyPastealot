@@ -1,7 +1,7 @@
 const MAX_PAGES = 20;
 const SLOTS_PER_PAGE = 10;
 const MAX_FILES = MAX_PAGES * SLOTS_PER_PAGE;
-const STORAGE_KEY = 'photo-ocr-keeper-v4';
+const STORAGE_KEY = 'photo-ocr-keeper-v5';
 const OCR_API_ENDPOINT = '/api/ocr';
 
 const photoInputEl = document.getElementById('photoInput');
@@ -91,6 +91,7 @@ function renderPager() {
       saveState();
       renderPager();
       renderSlots();
+      updateQueueStatus();
     });
     pageSelectEl.appendChild(btn);
   });
@@ -117,6 +118,7 @@ function renderSlots() {
       slot.text = textArea.value;
       meta.textContent = slot.text ? `${slot.text.length}字` : '';
       saveState();
+      updateQueueStatus();
     });
 
     copyBtn.addEventListener('click', async () => {
@@ -125,12 +127,12 @@ function renderSlots() {
         await navigator.clipboard.writeText(slot.text);
         slot.copyHistory.push(slot.text);
         const prev = copyBtn.textContent;
-        copyBtn.textContent = '✓';
+        copyBtn.textContent = 'コピーしました';
         copyBtn.disabled = true;
         setTimeout(() => {
           copyBtn.textContent = prev;
           copyBtn.disabled = false;
-        }, 1800);
+        }, 1600);
         saveState();
       } catch {
         // noop
@@ -142,7 +144,8 @@ function renderSlots() {
 }
 
 async function processImages() {
-  if (!pendingFiles.length) return;
+  const canExtract = getExtractableCount();
+  if (!canExtract) return;
 
   const emptySlots = flattenSlots().filter(({ slot }) => !slot.text);
   ensurePageCapacity(emptySlots.length + pendingFiles.length);
@@ -174,6 +177,7 @@ async function processImages() {
       : { ...defaultSlot(), text: '読み取れませんでした', ocrFailed: true };
   }
 
+  pendingFiles.length = 0;
   progressLabelEl.textContent = '完了';
   progressCountEl.textContent = jobs.length ? `${jobs.length}/${jobs.length}` : '';
   progressFillEl.style.width = '100%';
@@ -181,7 +185,7 @@ async function processImages() {
   saveState();
   renderPager();
   renderSlots();
-  updateQueueStatus(`${jobs.length}件を保存しました`);
+  updateQueueStatus();
 }
 
 async function recognizeWithFallback(file, index, total) {
@@ -267,6 +271,7 @@ function deleteCurrentPage() {
     state.pages[0] = makePage(state.pages[0].id);
     saveState();
     renderSlots();
+    updateQueueStatus();
     return;
   }
 
@@ -275,10 +280,27 @@ function deleteCurrentPage() {
   saveState();
   renderPager();
   renderSlots();
+  updateQueueStatus();
+}
+
+function getExtractableCount() {
+  const used = flattenSlots().filter(({ slot }) => !!slot.text).length;
+  const free = MAX_FILES - used;
+  return Math.max(0, Math.min(pendingFiles.length, free));
 }
 
 function updateQueueStatus(message = '') {
-  progressLabelEl.textContent = message;
-  progressCountEl.textContent = pendingFiles.length ? `${pendingFiles.length}/200` : '';
-  if (!pendingFiles.length && !message) progressFillEl.style.width = '0%';
+  const extractable = getExtractableCount();
+  processBtnEl.disabled = extractable === 0;
+  processBtnEl.textContent = extractable > 0 ? `文字抽出（${extractable}件）` : '文字抽出';
+
+  if (message) {
+    progressLabelEl.textContent = message;
+    progressCountEl.textContent = pendingFiles.length ? `${pendingFiles.length}枚選択 / 抽出可能${extractable}件` : '';
+    return;
+  }
+
+  progressLabelEl.textContent = pendingFiles.length ? `選択中: ${pendingFiles.length}枚` : '';
+  progressCountEl.textContent = pendingFiles.length ? `抽出可能: ${extractable}件` : '';
+  if (!pendingFiles.length) progressFillEl.style.width = '0%';
 }
