@@ -1,7 +1,7 @@
 const MAX_PAGES = 20;
 const SLOTS_PER_PAGE = 10;
 const MAX_FILES = MAX_PAGES * SLOTS_PER_PAGE;
-const STORAGE_KEY = 'photo-ocr-keeper-v5';
+const STORAGE_KEY = 'photo-ocr-keeper-v6';
 const OCR_API_ENDPOINT = '/api/ocr';
 
 const photoInputEl = document.getElementById('photoInput');
@@ -15,8 +15,10 @@ const matchTextEl = document.getElementById('matchText');
 const progressFillEl = document.getElementById('progressFill');
 const progressLabelEl = document.getElementById('progressLabel');
 const progressCountEl = document.getElementById('progressCount');
+const toastEl = document.getElementById('toast');
 
 const pendingFiles = [];
+let toastTimer;
 
 const defaultSlot = () => ({ text: '', ocrFailed: false, copyHistory: [] });
 const makePage = (id) => ({ id, slots: Array.from({ length: SLOTS_PER_PAGE }, defaultSlot) });
@@ -67,17 +69,15 @@ function appendSelectedFiles() {
 
   const room = MAX_FILES - pendingFiles.length;
   if (room <= 0) {
-    updateQueueStatus('選択写真は200枚までです');
+    updateQueueStatus();
     photoInputEl.value = '';
     return;
   }
 
   const accepted = selected.slice(0, room);
   pendingFiles.push(...accepted);
-  if (selected.length > room) updateQueueStatus(`200枚上限のため ${selected.length - room} 枚は追加されませんでした`);
-  else updateQueueStatus(`${accepted.length}枚を追加しました`);
-
   photoInputEl.value = '';
+  updateQueueStatus();
 }
 
 function renderPager() {
@@ -127,15 +127,16 @@ function renderSlots() {
         await navigator.clipboard.writeText(slot.text);
         slot.copyHistory.push(slot.text);
         const prev = copyBtn.textContent;
-        copyBtn.textContent = 'コピーしました';
+        copyBtn.textContent = '✓';
         copyBtn.disabled = true;
+        showToast('コピーしました');
         setTimeout(() => {
           copyBtn.textContent = prev;
           copyBtn.disabled = false;
-        }, 1600);
+        }, 1200);
         saveState();
       } catch {
-        // noop
+        showToast('コピーに失敗しました');
       }
     });
 
@@ -190,8 +191,8 @@ async function processImages() {
 
 async function recognizeWithFallback(file, index, total) {
   try {
-    const apiText = await recognizeByBackend(file);
-    if (apiText) return apiText;
+    // If backend responds (even empty text), do not fallback to local OCR to avoid double-cost latency.
+    return await recognizeByBackend(file);
   } catch {
     // fallback to local
   }
@@ -213,7 +214,7 @@ async function recognizeByBackend(file) {
   const formData = new FormData();
   formData.append('image', file);
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 5000);
+  const timer = setTimeout(() => controller.abort(), 15000);
   try {
     const res = await fetch(OCR_API_ENDPOINT, { method: 'POST', body: formData, signal: controller.signal });
     if (!res.ok) throw new Error('backend unavailable');
@@ -242,7 +243,7 @@ function findMatch(rawText, mode, term) {
 
 async function preprocessImage(file) {
   const imageBitmap = await createImageBitmap(file);
-  const scale = imageBitmap.width > 1400 ? 1400 / imageBitmap.width : 1;
+  const scale = imageBitmap.width > 1200 ? 1200 / imageBitmap.width : 1;
   const width = Math.max(1, Math.round(imageBitmap.width * scale));
   const height = Math.max(1, Math.round(imageBitmap.height * scale));
 
@@ -256,8 +257,8 @@ async function preprocessImage(file) {
   const d = imgData.data;
   for (let i = 0; i < d.length; i += 4) {
     const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-    const boosted = Math.min(255, Math.max(0, (gray - 128) * 1.25 + 128));
-    const bw = boosted > 150 ? 255 : 0;
+    const boosted = Math.min(255, Math.max(0, (gray - 128) * 1.22 + 128));
+    const bw = boosted > 152 ? 255 : 0;
     d[i] = bw;
     d[i + 1] = bw;
     d[i + 2] = bw;
@@ -289,18 +290,29 @@ function getExtractableCount() {
   return Math.max(0, Math.min(pendingFiles.length, free));
 }
 
-function updateQueueStatus(message = '') {
+function getCopyableCount() {
+  return flattenSlots().filter(({ slot }) => !!slot.text && !slot.ocrFailed).length;
+}
+
+function updateQueueStatus() {
   const extractable = getExtractableCount();
+  const copyable = getCopyableCount();
+
   processBtnEl.disabled = extractable === 0;
-  processBtnEl.textContent = extractable > 0 ? `文字抽出（${extractable}件）` : '文字抽出';
+  processBtnEl.textContent = '文字抽出';
 
-  if (message) {
-    progressLabelEl.textContent = message;
-    progressCountEl.textContent = pendingFiles.length ? `${pendingFiles.length}枚選択 / 抽出可能${extractable}件` : '';
-    return;
-  }
+  progressLabelEl.textContent = `抽出可能件数 ${extractable}件`;
+  progressCountEl.textContent = `コピー可能 ${copyable}件`;
 
-  progressLabelEl.textContent = pendingFiles.length ? `選択中: ${pendingFiles.length}枚` : '';
-  progressCountEl.textContent = pendingFiles.length ? `抽出可能: ${extractable}件` : '';
   if (!pendingFiles.length) progressFillEl.style.width = '0%';
+}
+
+function showToast(message) {
+  if (!toastEl) return;
+  toastEl.textContent = message;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toastEl.classList.remove('show');
+  }, 1100);
 }
