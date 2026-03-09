@@ -1,43 +1,74 @@
+const DEFAULT_MODEL = 'gpt-4.1-mini';
+
+function buildInstruction(matchMode, matchText, customPrompt) {
+  if (customPrompt) return customPrompt;
+
+  const condition = matchText
+    ? matchMode === 'suffix'
+      ? `末尾が「${matchText}」の文字列を優先して1件返してください。`
+      : `先頭が「${matchText}」の文字列を優先して1件返してください。`
+    : '画像内の文字列から最も有用そうな1件を返してください。';
+
+  return [
+    'あなたはOCRアシスタントです。',
+    '画像内の文字列を読み取り、最終的に1件だけ返してください。',
+    condition,
+    '返答は抽出結果の文字列のみ。余計な説明や記号は不要です。'
+  ].join('\n');
+}
+
 export async function onRequestPost(context) {
   try {
     const formData = await context.request.formData();
     const image = formData.get('image');
+    const matchMode = String(formData.get('matchMode') || 'prefix');
+    const matchText = String(formData.get('matchText') || '').trim();
 
     if (!image) {
       return Response.json({ error: 'image is required' }, { status: 400 });
     }
 
-    const backendUrl = context.env.OCR_BACKEND_URL;
-    if (!backendUrl) {
-      return Response.json({ error: 'OCR_BACKEND_URL is not configured' }, { status: 501 });
+    const apiKey = context.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return Response.json({ error: 'OPENAI_API_KEY is not configured' }, { status: 501 });
     }
 
-    const upstreamForm = new FormData();
-    upstreamForm.append('image', image, image.name || 'upload.png');
+    const model = context.env.OPENAI_MODEL || DEFAULT_MODEL;
+    const customPrompt = context.env.OCR_PROMPT || '';
+    const instruction = buildInstruction(matchMode, matchText, customPrompt);
 
-    const headers = {};
-    if (context.env.OCR_BACKEND_TOKEN) {
-      headers.Authorization = `Bearer ${context.env.OCR_BACKEND_TOKEN}`;
-    }
+    const imageBuffer = await image.arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+    const mimeType = image.type || 'image/png';
+    const dataUrl = `data:${mimeType};base64,${base64}`;
 
-    const upstreamRes = await fetch(backendUrl, {
+    const openaiRes = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
-      headers,
-      body: upstreamForm
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model,
+        input: [
+          {
+            role: 'user',
+            content: [
+              { type: 'input_text', text: instruction },
+              { type: 'input_image', image_url: dataUrl }
+            ]
+          }
+        ]
+      })
     });
 
-    if (!upstreamRes.ok) {
-      const detail = await upstreamRes.text();
-      return Response.json({ error: 'upstream failed', detail }, { status: 502 });
+    if (!openaiRes.ok) {
+      const detail = await openaiRes.text();
+      return Response.json({ error: 'openai request failed', detail }, { status: 502 });
     }
 
-    const contentType = upstreamRes.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      const json = await upstreamRes.json();
-      return Response.json({ text: typeof json.text === 'string' ? json.text : '' }, { status: 200 });
-    }
-
-    const text = await upstreamRes.text();
+    const json = await openaiRes.json();
+    const text = typeof json.output_text === 'string' ? json.output_text.trim() : '';
     return Response.json({ text }, { status: 200 });
   } catch {
     return Response.json({ error: 'bad request' }, { status: 400 });

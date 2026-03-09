@@ -213,6 +213,8 @@ async function recognizeWithFallback(file, index, total) {
 async function recognizeByBackend(file) {
   const formData = new FormData();
   formData.append('image', file);
+  formData.append('matchMode', matchModeEl.value);
+  formData.append('matchText', matchTextEl.value.trim());
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
   try {

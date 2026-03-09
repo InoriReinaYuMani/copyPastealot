@@ -12,13 +12,14 @@
 - 検索条件は常時表示（先頭一致 / 末尾一致 + 複数文字条件）
 - OCR進行率バーで読み込み進捗を表示
 - OCRは `/api/ocr` を優先し、失敗時のみブラウザ内OCRへフォールバック
-- Pages Functions `/api/ocr` は外部OCR連携プロキシ実装（`OCR_BACKEND_URL` 必須）
+- Pages Functions `/api/ocr` は ChatGPT画像解析(OpenAI Responses API)連携
 - 枠は常時編集可能、フォーカス中は青系の選択表示
 - コピー時はアイコンが一時的にチェックマークへ変化し、別途トースト表示
 
 ## Cloudflare Pages Functions 環境変数
-- `OCR_BACKEND_URL`: OCRバックエンドのPOSTエンドポイント（必須）
-- `OCR_BACKEND_TOKEN`: バックエンド認証トークン（任意、Bearerとして送信）
+- `OPENAI_API_KEY`: 必須。OpenAI APIキー
+- `OPENAI_MODEL`: 任意。既定は `gpt-4.1-mini`
+- `OCR_PROMPT`: 任意。OCR抽出指示を上書きしたい場合に指定
 
 ## パフォーマンス注意
-- `OCR_BACKEND_URL` が未設定/不調だと、ブラウザ内OCRフォールバックが動作し、処理が重くなります。
+- バックエンドが未設定/失敗時はブラウザ内OCRフォールバックが動作し、処理が重くなります。
